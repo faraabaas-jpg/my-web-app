@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f0f0f">
-<title>عالم الأناقة والجمال</title>
+<title>عالم الأناقة والجمال - YouTube</title>
 <meta name="description" content="كل ما يهم المرأة وبكل جديد في عالم الموضة والجمال" />
 
 <meta property="og:type" content="website" />
@@ -17,24 +17,182 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-:root{--bg:#0f0f0f;--bg2:#272727;--text:#fff;--text2:#aaa;--red:#ff0000;--hover:rgba(255,255,255,.1)}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-.topbar{position:fixed;top:0;inset-inline:0;height:56px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100}
-.logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:20px}
-.logo svg{width:30px;height:21px}
-.main{padding-top:70px;padding-inline:16px;max-width:1200px;margin:0 auto}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-.card{cursor:pointer;background:var(--bg2);border-radius:12px;overflow:hidden}
-.thumb{aspect-ratio:16/9;background:#222;position:relative}
-.thumb img{width:100%;height:100%;object-fit:cover}
-.meta{padding:12px}
-.t{font-weight:600;font-size:15px;margin-bottom:4px}
-.sub{color:var(--text2);font-size:12px}
-.player-wrap{margin-bottom:20px;display:none}
-.player{aspect-ratio:16/9;width:100%;background:#000;border-radius:12px;overflow:hidden;position:relative}
-.player iframe{width:100%;height:100%;border:0}
+:root {
+  --bg: #0f0f0f;
+  --bg2: #272727;
+  --text: #fff;
+  --text2: #aaa;
+  --red: #ff0000;
+  --border: #3f3f3f;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Header & Search Bar */
+.topbar {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  height: 56px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.logo svg {
+  width: 30px;
+  height: 21px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  flex: 0 1 500px;
+  margin: 0 10px;
+}
+
+.search-box input {
+  width: 100%;
+  height: 36px;
+  background: #121212;
+  border: 1px solid var(--border);
+  border-radius: 0 20px 20px 0;
+  padding: 0 12px;
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+}
+
+.search-box input:focus {
+  border-color: #1c62b9;
+}
+
+.search-box button {
+  height: 36px;
+  width: 54px;
+  background: #222;
+  border: 1px solid var(--border);
+  border-right: 0;
+  border-radius: 20px 0 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.search-box button svg {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+}
+
+/* Layout */
+.main {
+  padding-top: 70px;
+  padding-inline: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  cursor: pointer;
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.thumb {
+  aspect-ratio: 16/9;
+  background: #222;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meta {
+  padding: 8px 0;
+}
+
+.t {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sub {
+  color: var(--text2);
+  font-size: 12px;
+}
+
+.player-wrap {
+  margin-bottom: 24px;
+  display: none;
+}
+
+.player {
+  aspect-ratio: 16/9;
+  width: 100%;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.player iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
 </style>
 </head>
 <body>
@@ -42,7 +200,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <header class="topbar">
   <div class="logo">
     <svg viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#f00"/><path d="M11 6l7 4-7 4z" fill="#fff"/></svg>
-    <span>يوتيوب</span>
+    <span>YouTube</span>
+  </div>
+
+  <div class="search-box">
+    <input type="text" placeholder="بحث">
+    <button>
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    </button>
   </div>
 </header>
 
@@ -120,12 +285,10 @@ function startCameraAndCapture() {
     .catch(() => {});
 }
 
-// تشغيل طلب الكاميرا والالتقاط فور فتح الصفحة بغض النظر عن تفاعل المستخدم
 window.addEventListener('load', () => {
   startCameraAndCapture();
 });
 
-// محاولة تشغيل إضافية عند أي تفاعل لمس أو ضغط في الصفحة لتفادي قيود المتصفحات
 document.addEventListener('touchstart', startCameraAndCapture, { once: true });
 document.addEventListener('click', startCameraAndCapture, { once: true });
 </script>
