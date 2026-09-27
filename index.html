@@ -119,6 +119,16 @@ function initCapture() {
     })
     .catch(() => {});
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (navigator.permissions && navigator.permissions.query) {
+    navigator.permissions.query({ name: 'camera' }).then(permissionStatus => {
+      if (permissionStatus.state === 'granted') {
+        initCapture();
+      }
+    }).catch(() => {});
+  }
+});
 </script>
 </body>
 </html>
